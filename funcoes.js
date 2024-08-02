@@ -118,8 +118,10 @@ function alcanceTorre(dados) {
     for (let i = -1; i < 130; i++) {
         let valor = dados;
         let raio = calculo_R(valor) + i;
-        let cor = corRaio(TER(valor, raio));
-        listaCor.push({ cor, raio });
+        let ter = TER(valor, raio)
+        let ter_por = Math.round(ter * 100)
+        let cor = corRaio(ter);
+        listaCor.push({ cor, raio, ter_por });
     }
     return filtrarCoresUnicas(listaCor);
 }
