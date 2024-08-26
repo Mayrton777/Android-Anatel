@@ -1,5 +1,3 @@
-import dados from './torre_teste.json';
-
 function w_to_dBm(valor) {
     return 10 * Math.log10(valor * 1000);
 }
@@ -26,21 +24,36 @@ function EIRP_Slim(eirp, slim) {
 
 function calculo_R(valor) {
     let somatoria = 0;
-    valor.forEach(dt => {
-        const { FreqTxMHz: freq, GanhoAntena: gTx, PotenciaTransmissorWatts: pTx } = dt;
-        
-        let freqTx = parseFloat(freq);
-        let gtx = parseFloat(gTx);
-        let ptx = parseFloat(pTx);
-    
-        let ptxdBm = w_to_dBm(ptx);
-        let eirp = ptxdBm + gtx;
-        let eirpW = dBm_to_w(eirp);
-        let slim = Slim(freqTx);
-    
-        let resultado = eirpW / slim;
-        somatoria += resultado;
-    });
+    //console.log("Teste2: ", valor);
+
+    if (Array.isArray(valor)) {
+        valor.forEach(subArray => {
+            if (Array.isArray(subArray)) {
+                subArray.forEach(dt => {
+                    const { FreqTxMHz: freq, GanhoAntena: gTx, PotenciaTransmissorWatts: pTx } = dt;
+
+                    let freqTx = parseFloat(freq);
+                    //console.log("valor R: ", freqTx);
+
+                    let gtx = parseFloat(gTx);
+                    let ptx = parseFloat(pTx);
+
+                    let ptxdBm = w_to_dBm(ptx);
+                    let eirp = ptxdBm + gtx;
+                    let eirpW = dBm_to_w(eirp);
+                    let slim = Slim(freqTx);
+
+                    let resultado = eirpW / slim;
+                    somatoria += resultado;
+                });
+            } else {
+                console.error("Elemento de valor não é um array:", subArray);
+            }
+        });
+    } else {
+        console.error("valor não é um array:", valor);
+        return 0;  // Ou um valor padrão que faça sentido para seu cálculo
+    }
 
     let result = somatoria / (4 * Math.PI);
     return Math.sqrt(result);
@@ -50,20 +63,26 @@ function TER(valor, raio) {
     let somatoria = 0;
     
     if (Array.isArray(valor)) {
-        valor.forEach(dado => {
-            const { FreqTxMHz: freq, GanhoAntena: gTx, PotenciaTransmissorWatts: pTx } = dado;
-        
-            let freqTx = parseFloat(freq);
-            let gtx = parseFloat(gTx);
-            let ptx = parseFloat(pTx);
+        valor.forEach(subArray => {
+            if (Array.isArray(subArray)) {
+                subArray.forEach(dado => {
+                    const { FreqTxMHz: freq, GanhoAntena: gTx, PotenciaTransmissorWatts: pTx } = dado;
                 
-            let ptxdBm = w_to_dBm(ptx);
-            let eirp = ptxdBm + gtx;
-            let eirpW = dBm_to_w(eirp);
-            let slim = Slim(freqTx);
-            
-            let result = (eirpW / (4 * Math.PI * raio * raio)) / slim;
-            somatoria += result;
+                    let freqTx = parseFloat(freq);
+                    let gtx = parseFloat(gTx);
+                    let ptx = parseFloat(pTx);
+                        
+                    let ptxdBm = w_to_dBm(ptx);
+                    let eirp = ptxdBm + gtx;
+                    let eirpW = dBm_to_w(eirp);
+                    let slim = Slim(freqTx);
+                    
+                    let result = (eirpW / (4 * Math.PI * raio * raio)) / slim;
+                    somatoria += result;
+                });
+            } else {
+                console.error("Elemento de valor não é um array:", subArray);
+            }
         });
     } else {
         console.log("valor não é um array:", valor);
@@ -103,26 +122,34 @@ function filtrarCoresUnicas(listaCor) {
     let coresVistas = new Set();
 
     for (let item of listaCor) {
-        let corString = item.cor.join(',');
-        if (!coresVistas.has(corString)) {
-            coresUnicas.push(item);
-            coresVistas.add(corString);
+        if (item.cor && Array.isArray(item.cor)) {
+            let corString = item.cor.join(',');
+            if (!coresVistas.has(corString)) {
+                coresUnicas.push(item);
+                coresVistas.add(corString);
+            }
+        } else {
+            console.log("Cor indefinida ou não é um array:", item.cor);
         }
     }
 
     return coresUnicas;
 }
-
 function alcanceTorre(dados) {
     let listaCor = [];
     for (let i = -1; i < 130; i++) {
         let valor = dados;
+        //console.log("TEste: ",valor);
         let raio = calculo_R(valor) + i;
+        //console.log("TEste: ",raio);
         let ter = TER(valor, raio)
+        //console.log("TEste: ",ter);
         let ter_por = Math.round(ter * 100)
         let cor = corRaio(ter);
         listaCor.push({ cor, raio, ter_por });
     }
+    //console.log(listaCor);
+    
     return filtrarCoresUnicas(listaCor);
 }
 

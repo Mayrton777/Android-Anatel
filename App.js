@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { StyleSheet, View, Image } from 'react-native';
 import { calculo_R, TER, alcanceTorre } from './funcoes';
-import dados from './torre_teste.json'; // Importando o JSON diretamente
+import dados from './dados/torre_teste.json'; // Importando o JSON diretamente
 import Botoes from './components/Botoes';
 import Tabela from './components/Tabela';
 
 const App = () => {
   const [markers, setMarkers] = useState([]);
   const [circleCenter, setCircleCenter] = useState(null);
-  const [redCircleCenter, setRedCircleCenter] = useState(null);
+  const [redCircleCenter, setRedCircleCenter] = useState([]);
   const [redCircleRadius, setRedCircleRadius] = useState(0);
   const [towersData, setTowersData] = useState([]);
   const [isTableVisible, setIsTableVisible] = useState(false);
@@ -24,8 +24,8 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await alcanceTorre(dados); // Usando os dados importados
-        setTowersData(data);
+        //const data = await alcanceTorre(dados); // Usando os dados importados
+        //setTowersData(data);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
       }
@@ -68,13 +68,51 @@ const App = () => {
     setCircleCenter(coordinate);
 
     if (nearbyTowers.length > 0) {
+
       setIsTableVisible(true);
       const groupedTowers = groupBy(nearbyTowers, tower => `${tower.Latitude},${tower.Longitude}`);
-      const closestGroup = Object.values(groupedTowers)[0];
-      const alcance = calculo_R(closestGroup);
-      //const corRaio = TER(closestGroup, alcance);
-      setRedCircleCenter({ latitude: parseFloat(closestGroup[0].Latitude), longitude: parseFloat(closestGroup[0].Longitude) });
+      
+      const filteredData = Object.values(groupedTowers).map(group => {
+        if (!Array.isArray(group)) {
+            console.error("Group is not an array:", group);
+            return [];  // Retorna um array vazio ou faça outra ação conforme necessário
+        }
+        return group.map(tower => ({
+          NomeEntidade: tower.NomeEntidade,
+          NumEstacao: tower.NumEstacao,
+          EnderecoEstacao: tower.EnderecoEstacao,
+          EndComplemento: tower.EndComplemento ? tower.EndComplemento : null,
+          SiglaUf: tower.SiglaUf,
+          FreqTxMHz: parseFloat(tower.FreqTxMHz),
+          GanhoAntena: parseFloat(tower.GanhoAntena),
+          PotenciaTransmissorWatts: parseFloat(tower.PotenciaTransmissorWatts),
+          Latitude: parseFloat(tower.Latitude),
+          Longitude: parseFloat(tower.Longitude),
+        }));
+      });
+      if (filteredData[0] && filteredData[0][0]) {
+        console.log("Teste dados: ", filteredData[0][0].Latitude, filteredData[0][0].Longitude);
+      } else {
+        console.error("Dados de latitude e longitude não encontrados.");
+      }
+
+      
+      const alcance = calculo_R(filteredData);
       setRedCircleRadius(alcance);
+      //console.log("Alcance: ", alcance);
+      
+      const centers = filteredData.map(tower => ({
+        latitude: tower[0].Latitude,
+        longitude: tower[0].Longitude,
+      }));
+      
+      setRedCircleCenter(centers);
+      
+      //console.log("RedCircle: ", centers);
+      const dadosTorre = alcanceTorre(filteredData)
+      setTowersData(dadosTorre)
+      //console.log('Teste dados Torres: ', dadosTorre);
+      
 
       // Atualizar a região do mapa para o ponto clicado com zoom de nível 10
       setRegion({
@@ -119,24 +157,28 @@ const App = () => {
   };
 
   const renderRays = () => {
-    const raysData = [...towersData].reverse();
-    return raysData.map((ray, index) => {
-      const [r, g, b] = ray.cor;
-      const radius = ray.raio;
-      const color = `rgba(${r},${g},${b},0.5)`;
-
-      return (
-        <React.Fragment key={`ray_container_${index}`}>
-          <Circle
-            key={`ray_${index}`}
-            center={redCircleCenter}
-            radius={radius}
-            strokeWidth={1}
-            strokeColor={`rgba(${r},${g},${b},0.5)`}
-            fillColor={color}
-          />
-        </React.Fragment>
-      );
+    const reversedCenters = [...redCircleCenter].reverse(); // Clonando e revertendo a ordem das coordenadas
+    const reversedTowersData = [...towersData].reverse();   // Clonando e revertendo a ordem dos dados das torres
+  
+    return reversedCenters.map((center, index) => {
+      return reversedTowersData.map((ray, rayIndex) => {
+        const [r, g, b] = ray.cor;
+        const radius = ray.raio;
+        const color = `rgba(${r},${g},${b},0.5)`;
+  
+        return (
+          <React.Fragment key={`ray_container_${index}_${rayIndex}`}>
+            <Circle
+              key={`ray_${rayIndex}`}
+              center={center} // Usando o centro do círculo aqui
+              radius={radius}
+              strokeWidth={1}
+              strokeColor={`rgba(${r},${g},${b},0.5)`}
+              fillColor={color}
+            />
+          </React.Fragment>
+        );
+      });
     });
   };
 
