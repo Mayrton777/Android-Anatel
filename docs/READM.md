@@ -1,6 +1,6 @@
-# Projeto de Aplicativo de Mapeamento e Análise de Torres de Comunicação
+# Projeto de Aplicativo de Exposição a Campo Eletromagnético
 
-Este projeto é um aplicativo de mapeamento e análise de torres de comunicação desenvolvido com React Native. O aplicativo utiliza mapas interativos para exibir torres de comunicação e suas áreas de alcance com base em dados fornecidos. 
+Este projeto é um aplicativo de calculo da exposição a campos eletromagnéticos desenvolvido com React Native. O aplicativo utiliza mapas interativos para exibir torres de comunicação e suas áreas de alcance com base em dados fornecidos e calcula a exposição que o ser humano sofre. 
 
 ## Funcionalidades
 
@@ -8,7 +8,6 @@ Este projeto é um aplicativo de mapeamento e análise de torres de comunicaçã
 - Permite ao usuário clicar em um ponto do mapa para visualizar as torres próximas.
 - Calcula e exibe círculos de alcance ao redor das torres.
 - Mostra uma tabela com informações sobre as torres próximas ao ponto clicado.
-- Permite atualizar a região do mapa e reiniciar o zoom.
 
 ## Tecnologias Utilizadas
 
@@ -70,23 +69,6 @@ Siga os passos abaixo para configurar e rodar o projeto localmente.
   - **/utils**: Funções utilitárias para cálculos e processamento de dados.
 - **App.js**: Componente principal do aplicativo que gerencia o estado e a renderização do mapa.
 - **index.js**: Ponto de entrada do aplicativo.
-
-## Contribuição
-
-Contribuições são bem-vindas! Se você deseja contribuir para este projeto, siga estas etapas:
-
-1. Fork o repositório.
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`).
-3. Faça suas alterações e adicione testes.
-4. Envie um Pull Request.
-
-## Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
-
-## Contato
-
-Se você tiver alguma dúvida ou sugestão, sinta-se à vontade para abrir uma issue ou entrar em contato com o mantenedor do projeto.
 
 ---
 
