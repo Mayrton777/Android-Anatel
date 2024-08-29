@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { StyleSheet, View, Image } from 'react-native';
-import { calculo_R, TER, alcanceTorre } from './funcoes';
-import dados from './dados/torre_teste.json'; // Importando o JSON diretamente
+import { calculo_R, TER, alcanceTorre } from './utils/funcoes';
+import dados from './data/torre_teste.json'; // Importando o JSON diretamente
 import Botoes from './components/Botoes';
 import Tabela from './components/Tabela';
 
@@ -52,7 +52,7 @@ const App = () => {
         coordinate: coordinate,
         title: 'Ponto clicado',
         description: 'Local onde você clicou no mapa',
-        image: require('./assets/pessoa.png'),
+        image: require('./assets/images/pessoa.png'),
       },
       ...nearbyTowers.map((item, index) => ({
         key: `tower_${index}`,
@@ -62,7 +62,7 @@ const App = () => {
         },
         title: item.NomeEntidade,
         description: `Endereço: ${item.EnderecoEstacao}, ${item.NomeMunicipio}`,
-        image: require('./assets/torre-de-comunicacao.png'),
+        image: require('./assets/images/torre-de-comunicacao.png'),
       }))
     ]);
     setCircleCenter(coordinate);

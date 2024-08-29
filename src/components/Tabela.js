@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import color from '../dados/color.json';
+import color from '../data/color.json';
 
 const Tabela = () => {
   const colorTable = color;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, TouchableWithoutFeedback } from 'react-native';
-import dados from '../dados/UF-MUNICIPIO.json';
+import dados from '../data/UF-MUNICIPIO.json';
 
 // Função para remover acentos
 const removeAcentos = (texto) => {
