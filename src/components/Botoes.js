@@ -7,12 +7,14 @@ const removeAcentos = (texto) => {
   return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 };
 
-const Botoes = ({ updateMapRegion, resetMapRegion, isSearching, setIsSearching }) => {
+const Botoes = ({ updateMapRegion, resetMapRegion, isSearching, setIsSearching, setShowMarkers, setShowCircles}) => {
   const [ufMunicipio, setUfMunicipio] = useState([]);
   const [uf, setUf] = useState('');
   const [municipio, setMunicipio] = useState('');
   const [ufSuggestions, setUfSuggestions] = useState([]);
   const [municipioSuggestions, setMunicipioSuggestions] = useState([]);
+
+  console.log("setShowMarkers:", setShowMarkers, setShowCircles);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +97,8 @@ const Botoes = ({ updateMapRegion, resetMapRegion, isSearching, setIsSearching }
         latitudeDelta: 0.1, // Ajuste para o zoom desejado
         longitudeDelta: 0.1, // Ajuste para o zoom desejado
       });
+      setShowMarkers(true);
+      setShowCircles(true);
       setIsSearching(true); // Define a busca como ativa
     } else {
       console.log('MUNICÍPIO NÃO EXISTE');
@@ -112,6 +116,8 @@ const Botoes = ({ updateMapRegion, resetMapRegion, isSearching, setIsSearching }
   };
 
   const handleSelectOtherMunicipio = () => {
+    console.log("Função funciona");
+    
     setIsSearching(false); // Define a busca como inativa
     resetMapRegion(); // Reseta a região do mapa
     setUf(''); // Limpa o campo UF
@@ -174,7 +180,10 @@ const Botoes = ({ updateMapRegion, resetMapRegion, isSearching, setIsSearching }
         </View>
       )}
       {isSearching && (
-        <TouchableOpacity style={styles.button} onPress={handleSelectOtherMunicipio}>
+        <TouchableOpacity style={styles.button} onPress={() => {
+          console.log("Botão pressionado, resetando mapa...");
+          handleSelectOtherMunicipio();
+      }}>
           <Text style={styles.buttonText}>Selecionar Outro Município</Text>
         </TouchableOpacity>
       )}
