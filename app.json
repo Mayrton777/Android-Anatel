@@ -5,10 +5,10 @@
     "slug": "Anatel",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "/home/mayrton/code/javaScript/Android2/Anatel/src/assets/icons/logo-app.png",
+    "icon": "./src/assets/icons/logo-app.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "/home/mayrton/code/javaScript/Android2/Anatel/src/assets/images/logo-anatel.png",
+      "image": "./src/assets/images/logo-anatel.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,13 +17,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "/home/mayrton/code/javaScript/Android2/Anatel/src/assets/icons/logo-app.png",
+        "foregroundImage": "./src/assets/icons/logo-app.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.mayrton.Anatel"
     },
     "web": {
-      "favicon": "/home/mayrton/code/javaScript/Android2/Anatel/src/assets/icons/logo-app.png"
+      "favicon": "./src/assets/icons/logo-app.png"
     },
     "extra": {
       "eas": {
