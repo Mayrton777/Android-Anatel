@@ -3,6 +3,34 @@ function w_to_dBm(valor) {
     return 10 * Math.log10(valor * 1000);  // Converte a potência de Watts para miliwatts e aplica a fórmula para dBm
 }
 
+// Função para calcular o ganho da antena em dBm
+function ganho_gaussian(ganho, az, az_z, el, el_z, meia) {
+    let resultado;
+    if(az_z == 0){
+        if(az > 180){
+            az -= 360;
+        }
+        resultado = ganho - 12 * (((el - el_z) / 7)**2 + ((az - az_z) / meia)**2);
+        if(resultado > 0){
+            return resultado;
+        } else {
+            return 0;
+        }
+    } else {
+        az -= az_z;
+        az_z -= az_z;
+        if(az > 180){
+            az -= 360;
+        }
+        resultado = ganho - 12 * (((el - el_z) / 7)**2 + ((az - az_z) / meia)**2);
+        if(resultado > 0){
+            return resultado;
+        } else {
+            return 0;
+        }
+    }
+}
+
 // Função para calcular a Potência Isotrópica Radiada Equivalente (EIRP) somando a potência do transmissor e o ganho da antena
 function EIRP(ptx, gtx) {
     return ptx + gtx;  // Retorna a soma da potência de transmissão e o ganho da antena
@@ -39,18 +67,31 @@ function calculo_R(valor) {
             if (Array.isArray(subArray)) {
                 // Itera sobre o subArray
                 subArray.forEach(dt => {
-                    const { FreqTxMHz: freq, GanhoAntena: gTx, PotenciaTransmissorWatts: pTx } = dt;
+                    const { 
+                        FreqTxMHz: freq,
+                        GanhoAntena: gTx, 
+                        PotenciaTransmissorWatts: pTx,
+                        Azimute: azi,
+                        AnguloElevacao: elev,
+                        AnguloMeiaPotenciaAntena: meia
+                    } = dt;
 
                     // Converte os valores de string para números
                     let freqTx = parseFloat(freq);
                     let gtx = parseFloat(gTx);
                     let ptx = parseFloat(pTx);
+                    let azimute = parseFloat(azi);
+                    let elevacao = parseFloat(elev);
+                    let meia_pot = parseFloat(meia);
 
                     // Converte a potência de transmissão de Watts para dBm
                     let ptxdBm = w_to_dBm(ptx);
+                    
+                    // Calculando o ganha gaussiano
+                    let ganho = ganho_gaussian(gtx, azimute, azimute, elevacao, elevacao, meia_pot)
 
                     // Calcula o EIRP
-                    let eirp = ptxdBm + gtx;
+                    let eirp = ptxdBm + ganho;
 
                     // Converte o EIRP de dBm para Watts
                     let eirpW = dBm_to_w(eirp);
@@ -88,18 +129,30 @@ function TER(valor, raio) {
             if (Array.isArray(subArray)) {
                 // Itera sobre o subArray
                 subArray.forEach(dado => {
-                    const { FreqTxMHz: freq, GanhoAntena: gTx, PotenciaTransmissorWatts: pTx } = dado;
+                    const { FreqTxMHz: freq,
+                        GanhoAntena: gTx, 
+                        PotenciaTransmissorWatts: pTx,
+                        Azimute: azi,
+                        AnguloElevacao: elev,
+                        AnguloMeiaPotenciaAntena: meia 
+                    } = dado;
 
                     // Converte os valores de string para números
                     let freqTx = parseFloat(freq);
                     let gtx = parseFloat(gTx);
                     let ptx = parseFloat(pTx);
+                    let azimute = parseFloat(azi);
+                    let elevacao = parseFloat(elev);
+                    let meia_pot = parseFloat(meia);
                     
                     // Converte a potência de transmissão de Watts para dBm
                     let ptxdBm = w_to_dBm(ptx);
 
+                    // Calculando o ganha gaussiano
+                    let ganho = ganho_gaussian(gtx, azimute, azimute, elevacao, elevacao, meia_pot)
+
                     // Calcula o EIRP
-                    let eirp = ptxdBm + gtx;
+                    let eirp = ptxdBm + ganho;
 
                     // Converte o EIRP de dBm para Watts
                     let eirpW = dBm_to_w(eirp);

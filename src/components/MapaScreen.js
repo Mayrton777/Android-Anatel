@@ -89,6 +89,8 @@ const MapaScreen = () => {
             setRedCircleCenter(centers);
     
             const dadosTorre = alcanceTorre(filteredData);
+            console.log(dadosTorre);
+            
             setTowersData(dadosTorre);
     
             setRegion({
