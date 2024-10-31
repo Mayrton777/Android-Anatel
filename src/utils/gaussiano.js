@@ -1,5 +1,5 @@
 // Função para calcular o ganho da antena em dBm
-function ganho_gaussian(ganho, az, az_z, el, el_z, meia) {
+export function ganho_gaussian(ganho, az, az_z, el, el_z, meia) {
     let resultado;
     if(az_z == 0){
         if(az > 180){
@@ -25,5 +25,3 @@ function ganho_gaussian(ganho, az, az_z, el, el_z, meia) {
         }
     }
 }
-
-export default ganho_gaussian;
