@@ -1,59 +1,7 @@
-// Função para converter potência em Watts para dBm
-function w_to_dBm(valor) {
-    return 10 * Math.log10(valor * 1000);  // Converte a potência de Watts para miliwatts e aplica a fórmula para dBm
-}
-
-// Função para calcular o ganho da antena em dBm
-function ganho_gaussian(ganho, az, az_z, el, el_z, meia) {
-    let resultado;
-    if(az_z == 0){
-        if(az > 180){
-            az -= 360;
-        }
-        resultado = ganho - 12 * (((el - el_z) / 7)**2 + ((az - az_z) / meia)**2);
-        if(resultado > 0){
-            return resultado;
-        } else {
-            return 0;
-        }
-    } else {
-        az -= az_z;
-        az_z -= az_z;
-        if(az > 180){
-            az -= 360;
-        }
-        resultado = ganho - 12 * (((el - el_z) / 7)**2 + ((az - az_z) / meia)**2);
-        if(resultado > 0){
-            return resultado;
-        } else {
-            return 0;
-        }
-    }
-}
-
-// Função para calcular a Potência Isotrópica Radiada Equivalente (EIRP) somando a potência do transmissor e o ganho da antena
-function EIRP(ptx, gtx) {
-    return ptx + gtx;  // Retorna a soma da potência de transmissão e o ganho da antena
-}
-
-// Função para converter dBm para Watts
-function dBm_to_w(valor) {
-    return (10 ** (valor / 10)) / 1000;  // Converte dBm para miliwatts e depois para Watts
-}
-
-// Função para calcular o fator de atenuação Slim com base na frequência de transmissão
-function Slim(valor) {
-    if (valor >= 2000) {  // Se a frequência for maior ou igual a 2000 MHz, retorna 10
-        return 10;
-    } else {  // Caso contrário, divide a frequência por 200
-        return valor / 200;
-    }
-}
-
-// Função para calcular o EIRP ajustado pelo fator Slim
-function EIRP_Slim(eirp, slim) {
-    return eirp / slim;  // Divide o EIRP pelo Slim para obter o EIRP ajustado
-}
+import { w_to_dBm, dBm_to_w } from "./converter";
+import { ganho_gaussian } from "./gaussiano";
+import { eirp, eirp_Slim } from "./calc_eirp";
+import { slim } from "./calc_slim";
 
 // Função para calcular o raio de alcance com base nos dados fornecidos
 function calculo_R(valor) {
@@ -88,19 +36,19 @@ function calculo_R(valor) {
                     let ptxdBm = w_to_dBm(ptx);
                     
                     // Calculando o ganha gaussiano
-                    let ganho = ganho_gaussian(gtx, azimute, azimute, elevacao, elevacao, meia_pot)
+                    let ganho = gtx
 
                     // Calcula o EIRP
-                    let eirp = ptxdBm + ganho;
+                    let vEIPR = eirp(ptxdBm, ganho);
 
                     // Converte o EIRP de dBm para Watts
-                    let eirpW = dBm_to_w(eirp);
+                    let eirpW = dBm_to_w(vEIPR);
 
                     // Calcula o Slim com base na frequência
-                    let slim = Slim(freqTx);
+                    let vSlim = slim(freqTx);
 
                     // Calcula o resultado dividindo o EIRP pelo Slim e acumula na somatória
-                    let resultado = eirpW / slim;
+                    let resultado = eirp_Slim(eirpW, vSlim)
                     somatoria += resultado;
                 });
             } else {
@@ -149,19 +97,19 @@ function TER(valor, raio) {
                     let ptxdBm = w_to_dBm(ptx);
 
                     // Calculando o ganha gaussiano
-                    let ganho = ganho_gaussian(gtx, azimute, azimute, elevacao, elevacao, meia_pot)
+                    let ganho = gtx
 
                     // Calcula o EIRP
-                    let eirp = ptxdBm + ganho;
+                    let vEIRP = eirp(ptxdBm, ganho);
 
                     // Converte o EIRP de dBm para Watts
-                    let eirpW = dBm_to_w(eirp);
+                    let eirpW = dBm_to_w(vEIRP);
 
                     // Calcula o Slim com base na frequência
-                    let slim = Slim(freqTx);
+                    let vSlim = slim(freqTx);
                     
                     // Calcula o resultado dividindo o EIRP pelo Slim e pelo raio ao quadrado
-                    let result = (eirpW / (4 * Math.PI * raio * raio)) / slim;
+                    let result = (eirpW / (4 * Math.PI * raio * raio)) / vSlim;
 
                     // Acumula o resultado na somatória
                     somatoria += result;

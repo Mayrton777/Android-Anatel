@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { calculo_R, alcanceTorre } from '../utils/funcoes';
-import dados from '../data/torre_teste.json';
+import dados from '../data/torre_unica.json';
 import Botoes from './Botoes';
 import Tabela from './Tabela';
 
@@ -183,6 +183,36 @@ const MapaScreen = () => {
                 style={styles.map}
                 region={region}
                 onPress={handleMapPress}
+                customMapStyle={[
+                    {
+                        "featureType": "poi",
+                        "elementType": "labels",
+                        "stylers": [
+                            { "visibility": "off" }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.business",
+                        "elementType": "geometry",
+                        "stylers": [
+                            { "visibility": "off" }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "geometry",
+                        "stylers": [
+                            { "visibility": "off" }
+                        ]
+                    },
+                    {
+                        "featureType": "building",
+                        "elementType": "geometry",
+                        "stylers": [
+                            { "visibility": "off" }
+                        ]
+                    }
+                ]}
             >
                 {markers.map(marker => (
                     <Marker
