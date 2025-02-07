@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { calculo_R, alcanceTorre } from '../utils/funcoes';
-import dados from '../data/torre_unica.json';
+import dados from '../data/torres.json';
 import Botoes from './Botoes';
 import Tabela from './Tabela';
 
@@ -24,7 +24,7 @@ const MapaScreen = () => {
     const [isSearching, setIsSearching] = useState(false);
 
     const handleMapPress = ({ nativeEvent }) => {
-        if (!showMarkers) return; // Não faz nada se os pontos não devem ser mostrados
+        if (!showMarkers) return; // Não faz nada, espera e interação do usuario para mostrar os pontos
     
         const { coordinate } = nativeEvent;
         const nearbyTowers = dados.filter(item => {
@@ -47,6 +47,10 @@ const MapaScreen = () => {
             },
             ...nearbyTowers.map((item, index) => ({
                 key: `tower_${index}`,
+                coordinate: {
+                    latitude: parseFloat(item.Latitude),
+                    longitude: parseFloat(item.Longitude),
+                },
                 coordinate: {
                     latitude: parseFloat(item.Latitude),
                     longitude: parseFloat(item.Longitude),
@@ -170,7 +174,7 @@ const MapaScreen = () => {
         setCircleCenter(null);
         setRedCircleCenter([]);
         setRedCircleRadius(0);
-        setIsTableVisible(false); // Opcional: se você deseja ocultar a tabela também
+        setIsTableVisible(false);
         setShowMarkers(false);
         setShowCircles(false);
 
@@ -218,12 +222,11 @@ const MapaScreen = () => {
                     <Marker
                         key={marker.key}
                         coordinate={marker.coordinate}
-                        title={marker.title}
-                        description={marker.description}
+                        anchor={{ x: 0.255, y: 0.3 }} // Centraliza a imagem do marcador
                     >
                         <Image
                             source={marker.image}
-                            style={{ width: 40, height: 40 }}
+                            style={{ width: 30, height: 30 }}
                         />
                     </Marker>
                 ))}
@@ -243,7 +246,7 @@ const MapaScreen = () => {
             </View>
             <Botoes
                 updateMapRegion={setRegion}
-                resetMapRegion={resetMapRegion} // Corrigido: passando a função corretamente
+                resetMapRegion={resetMapRegion}
                 isSearching={isSearching}
                 setIsSearching={setIsSearching}
                 setShowMarkers={setShowMarkers}
